@@ -28,13 +28,13 @@ def main():
         type=int, help='Length of prefix for stemming (source)')
     parser.add_argument(
         '--source-suffix', dest='source_suffix_len', default=0, metavar='N',
-        type=int, help='Length of suffix for stemming (source)')
+        type=int, help='Length of suffix for stemming (source). Ignored if source-prefix > 0')
     parser.add_argument(
         '--target-prefix', dest='target_prefix_len', default=0, metavar='N',
         type=int, help='Length of prefix for stemming (target)')
     parser.add_argument(
         '--target-suffix', dest='target_suffix_len', default=0, metavar='N',
-        type=int, help='Length of suffix for stemming (target)')
+        type=int, help='Length of suffix for stemming (target). Ignored if target-prefix > 0')
     parser.add_argument(
         '-l', '--length', dest='length', default=1.0, metavar='X',
         type=float, help='Relative number of sampling iterations')
@@ -65,6 +65,12 @@ def main():
         '-r', '--reverse-links', dest='links_filename_rev', type=str,
         metavar='filename',
         help='Filename to write reverse direction alignments to')
+    parser.add_argument(
+        '--stats', dest='stats', type=str, metavar='filename',
+        help='Filename to write stats to')
+    parser.add_argument(
+        '--scores', dest='scores', type=str, metavar='filename',
+        help='Filename to write scores to')
 
     args = parser.parse_args()
 
@@ -125,8 +131,8 @@ def main():
     align(srcf.name, trgf.name,
           links_filename_fwd=args.links_filename_fwd,
           links_filename_rev=args.links_filename_rev,
-          statistics_filename=None,
-          scores_filename=None,
+          statistics_filename=args.stats,
+          scores_filename=args.scores,
           model=args.model,
           n_iterations=iters,
           n_samplers=args.n_samplers,
@@ -140,4 +146,3 @@ def main():
 
 
 if __name__ == '__main__': main()
-
