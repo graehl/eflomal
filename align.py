@@ -71,6 +71,15 @@ def main():
     parser.add_argument(
         '--scores', dest='scores', type=str, metavar='filename',
         help='Filename to write scores to')
+    parser.add_argument(
+        '--lowercase', dest='lowercase', default=True, type=bool, metavar='0|1',
+        help="if 0, use original input case. if 1, (utf8) lowercase the input")
+    parser.add_argument(
+        '--max-lines', dest='maxlines', default=0, metavar='N',
+        type=int, help='if >0, reduce input lines by removing length-ratio outliers first until only max-lines remain')
+    parser.add_argument(
+        '--max-words', dest='maxwords', default=0, metavar='N',
+        type=int, help='if >0, reduce input lines by removing length-ratio outliers first until only max-words words (approx) remain. #words is an average across source and target based on the unfiltered typical line')
 
     args = parser.parse_args()
 
@@ -88,12 +97,13 @@ def main():
                   file=sys.stderr, flush=True)
             sys.exit(1)
 
+
     if args.verbose:
         print('Reading source text from %s...' % args.source_filename,
               file=sys.stderr, flush=True)
     with open(args.source_filename, 'r', encoding='utf-8') as f:
         src_sents, src_index = read_text(
-                f, True, args.source_prefix_len, args.source_suffix_len)
+                f, args.lowercase, args.source_prefix_len, args.source_suffix_len)
         n_src_sents = len(src_sents)
         src_voc_size = len(src_index)
         src_index = None
@@ -106,7 +116,7 @@ def main():
               file=sys.stderr, flush=True)
     with open(args.target_filename, 'r', encoding='utf-8') as f:
         trg_sents, trg_index = read_text(
-                f, True, args.target_prefix_len, args.target_suffix_len)
+                f, args.lowercase, args.target_prefix_len, args.target_suffix_len)
         trg_voc_size = len(trg_index)
         n_trg_sents = len(trg_sents)
         trg_index = None
